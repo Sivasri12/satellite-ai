@@ -1,14 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Satellite AI Control</title>
+<meta charset="UTF-8">
+<title>🚀 Satellite AI Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-<h1>🚀 Satellite AI Collision System</h1>
-<p><b>Satellite:</b> {{satellite}}</p>
-<p><b>Collision Risk:</b> {{risk}}</p>
-<p><b>AI Command:</b> {{command}}</p>
-<button onclick="location.reload()">Check Again</button>
+<h1>🌍 Satellite AI Control Center</h1>
+
+<div id="globe-container"></div>
+
+<h2>Satellite Collision Risk Dashboard</h2>
+<table id="dashboard">
+<tr><th>Satellite</th><th>Risk</th><th>Command</th><th>Velocity (km/s)</th><th>Altitude (km)</th></tr>
+</table>
+
+<canvas id="riskChart" width="800" height="200"></canvas>
+
+<script src="/static/globe.js"></script>
 </body>
 </html>
