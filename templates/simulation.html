@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Satellite Simulation</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; background: #000010; }
+        header {
+            position: absolute;
+            top: 0; width: 100%;
+            text-align: center;
+            color: #00ffff;
+            padding: 15px;
+            background: rgba(0,0,0,0.7);
+            z-index: 10;
+        }
+        #alert-box {
+            position: absolute;
+            top: 60px; left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255,0,0,0.7);
+            color: #fff;
+            padding: 10px 20px;
+            font-weight: bold;
+            display: none;
+            z-index: 10;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>3D Satellite Simulation</h1>
+</header>
+<div id="alert-box">⚠️ Collision Risk Detected! Sending AI Command...</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.0/examples/js/controls/OrbitControls.js"></script>
+<script src="/static/globe.js"></script>
+</body>
+</html>
