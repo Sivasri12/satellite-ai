@@ -1,28 +1,6 @@
-body {
-    font-family: Arial, sans-serif;
-    background: radial-gradient(circle at top, #0b0f2b, #000);
-    color: white;
-    text-align: center;
-}
-h1, h2 { color: #00ffcc; }
-table { 
-    margin: 20px auto; 
-    border-collapse: collapse;
-    width: 90%;
-}
-th, td { 
-    border: 1px solid white; 
-    padding: 8px; 
-}
-#globe-container { 
-    width: 900px; 
-    height: 500px; 
-    margin: auto; 
-    border: 2px solid #00ffcc; 
-    background: radial-gradient(circle, #000 0%, #111 100%);
-}
-canvas { 
-    margin-top: 20px; 
-    background: #111; 
-    border: 1px solid #00ffcc; 
-}
+body{ background:black; color:white; font-family:Arial; text-align:center; }
+h1{ color:#00ffff; }
+nav a{ color:#00ffff; margin:15px; text-decoration:none; font-weight:bold; }
+table{ margin:auto; border-collapse:collapse; }
+td, th{ border:1px solid white; padding:8px; }
+canvas{ margin-top:30px; }
