@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header><h1>Collision Risk Dashboard</h1></header>
+<canvas id="riskChart" width="800" height="400"></canvas>
+<script>
+const ctx = document.getElementById('riskChart').getContext('2d');
+const riskChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Satellite1','Satellite2','Satellite3','Satellite4','Satellite5'],
+        datasets: [{
+            label: 'Collision Risk (%)',
+            data: [5,10,15,2,8],
+            backgroundColor: 'rgba(255,99,132,0.5)'
+        }]
+    },
+    options:{scales:{y:{beginAtZero:true, max:100}}}
+});
+</script>
+</body>
+</html>
