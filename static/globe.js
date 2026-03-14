@@ -1,87 +1,76 @@
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth, 700);
-document.getElementById("globe").appendChild(renderer.domElement);
+let scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000010);
 
-// Orbit controls
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
+let camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 50, 150);
+
+let renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+let directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(100,100,100);
+scene.add(directionalLight);
 
 // Earth
-const geometry = new THREE.SphereGeometry(5,64,64);
-const texture = new THREE.TextureLoader().load("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg");
-const material = new THREE.MeshPhongMaterial({map:texture});
-const earth = new THREE.Mesh(geometry, material);
+let earthGeometry = new THREE.SphereGeometry(20,64,64);
+let earthMaterial = new THREE.MeshPhongMaterial({
+    map: new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg'),
+    bumpMap: new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/earthbump1k.jpg'),
+    bumpScale: 0.5
+});
+let earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
 
-// Light
-const light = new THREE.PointLight(0xffffff, 1);
-light.position.set(20,20,20);
-scene.add(light);
+let satellites = [];
+let alertBox = document.getElementById("alert-box");
 
-// Stars background
-function createStars(){
-  const starGeo = new THREE.BufferGeometry();
-  const starCount = 1000;
-  const positions = [];
-  for(let i=0;i<starCount;i++){
-    positions.push((Math.random()-0.5)*200);
-    positions.push((Math.random()-0.5)*200);
-    positions.push((Math.random()-0.5)*200);
-  }
-  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
-  const starMat = new THREE.PointsMaterial({color:0xffffff, size:0.5});
-  const stars = new THREE.Points(starGeo, starMat);
-  scene.add(stars);
-}
-createStars();
-
-// Camera
-camera.position.z = 15;
-
-// Satellites and debris
-let satellites=[], asteroids=[];
-fetch("/api/satellites").then(res=>res.json()).then(data=>{
-  data.forEach((sat,i)=>{
-    const geo = new THREE.SphereGeometry(0.1,8,8);
-    let col = sat.risk=="HIGH"?0xff0000:sat.risk=="MEDIUM"?0xffa500:0x00ff00;
-    const mat = new THREE.MeshBasicMaterial({color:col});
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(sat.x/200, sat.y/200, sat.z/200);
-    mesh.userData = sat;
-    scene.add(mesh);
-    satellites.push(mesh);
-  });
+fetch("/api/satellites")
+.then(res=>res.json())
+.then(data=>{
+    data.forEach(satData=>{
+        let sat = new THREE.Mesh(
+            new THREE.SphereGeometry(0.5,16,16),
+            new THREE.MeshPhongMaterial({color:0xffaa00})
+        );
+        sat.position.set(satData.x/1000, satData.y/1000, satData.z/1000);
+        sat.name = satData.name;
+        scene.add(sat);
+        satellites.push(sat);
+    });
 });
 
-// Debris
-for(let i=0;i<30;i++){
-  const geo = new THREE.SphereGeometry(0.15,8,8);
-  const mat = new THREE.MeshBasicMaterial({color:0x888888});
-  const asteroid = new THREE.Mesh(geo, mat);
-  asteroid.position.set(Math.random()*20-10, Math.random()*20-10, Math.random()*20-10);
-  scene.add(asteroid);
-  asteroids.push(asteroid);
+function speakAlert(message){
+    const synth = window.speechSynthesis;
+    const utterThis = new SpeechSynthesisUtterance(message);
+    synth.speak(utterThis);
 }
 
-// Animate
 function animate(){
-  requestAnimationFrame(animate);
-  earth.rotation.y += 0.001;
+    requestAnimationFrame(animate);
+    earth.rotation.y += 0.001;
 
-  // Collision check
-  satellites.forEach(sat=>{
-    asteroids.forEach(ast=>{
-      let dist = sat.position.distanceTo(ast.position);
-      if(dist<0.5){
-        const msg = new SpeechSynthesisUtterance("Collision risk detected. AI adjusting orbit.");
-        speechSynthesis.speak(msg);
-        sat.position.x += 0.5; sat.position.y += 0.5; sat.position.z += 0.5;
-      }
+    satellites.forEach(sat=>{
+        // simulate random collision alerts
+        if(Math.random() < 0.0005){
+            alertBox.style.display="block";
+            speakAlert("Collision risk detected. Sending AI Command.");
+            setTimeout(()=>{alertBox.style.display="none";},3000);
+        }
     });
-  });
 
-  controls.update();
-  renderer.render(scene, camera);
+    controls.update();
+    renderer.render(scene, camera);
 }
+
 animate();
+
+window.addEventListener('resize',()=>{
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
