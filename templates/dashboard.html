@@ -2,68 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Satellite Collision Dashboard</title>
+<title>Satellite Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  body { font-family: Arial, sans-serif; background: #0a0a1a; color: #fff; }
-  h1 { text-align: center; margin-top: 20px; }
-  #dashboard { width: 90%; max-width: 1200px; margin: 20px auto; }
-  canvas { background: rgba(0,0,0,0.7); border-radius: 10px; }
+body {
+    background-color: #0a0f2a; /* dark blue instead of black */
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+}
+header {
+    background-color: #1a237e;
+    padding: 15px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+.container {
+    padding: 20px;
+}
+canvas {
+    background-color: #111a44; /* slightly lighter than body */
+    border-radius: 10px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    padding: 8px;
+    border: 1px solid #ffffff55;
+    text-align: left;
+}
+th {
+    background-color: #3949ab;
+}
+tr:nth-child(even) {
+    background-color: #28359355;
+}
 </style>
 </head>
 <body>
-<h1>Satellite Collision Risk Dashboard</h1>
-<div id="dashboard">
-  <canvas id="riskChart"></canvas>
+<header>Satellite Dashboard</header>
+<div class="container">
+    <canvas id="riskChart" width="800" height="400"></canvas>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Satellite Name</th>
+                <th>Risk Level</th>
+                <th>Distance (km)</th>
+            </tr>
+        </thead>
+        <tbody id="satTable">
+            <!-- dynamic rows -->
+        </tbody>
+    </table>
 </div>
 
-<script>
-const ctx = document.getElementById('riskChart').getContext('2d');
-let satelliteNames = []; // will be populated dynamically
-let satelliteRisks = [];
-
-const riskChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: satelliteNames,
-        datasets: [{
-            label: 'Collision Risk %',
-            data: satelliteRisks,
-            backgroundColor: function(context) {
-                let value = context.dataset.data[context.dataIndex];
-                return value > 70 ? 'rgba(255,0,0,0.7)' : value > 30 ? 'rgba(255,255,0,0.7)' : 'rgba(0,255,0,0.7)';
-            },
-            borderColor: '#fff',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: { beginAtZero: true, max: 100, title: { display:true, text:'Risk %'} }
-        }
-    }
-});
-
-// Simulate live updates
-function updateDashboard(){
-    fetch("/api/satellites")
-    .then(res => res.json())
-    .then(data => {
-        satelliteNames.length = 0;
-        satelliteRisks.length = 0;
-        data.forEach(sat => {
-            satelliteNames.push(sat.name);
-            // simulate real-time risk
-            satelliteRisks.push(Math.min(100, Math.max(0, sat.risk || Math.floor(Math.random()*100))));
-        });
-        riskChart.update();
-    });
-}
-
-// Update every 5 seconds
-setInterval(updateDashboard, 5000);
-updateDashboard();
-</script>
+<script src="/static/dashboard.js"></script>
 </body>
 </html>
